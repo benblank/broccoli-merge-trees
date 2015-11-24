@@ -15,10 +15,12 @@ function unlinkOrRmrfSync(path) {
     rimraf.sync(path);
   }
 }
+var ASSIMILATION_SYMBOL = 'broccoli-merge-tree@1.0.0';
 
 module.exports = BroccoliMergeTrees
 BroccoliMergeTrees.prototype = Object.create(Plugin.prototype)
 BroccoliMergeTrees.prototype.constructor = BroccoliMergeTrees
+
 function BroccoliMergeTrees(inputNodes, options) {
   if (!(this instanceof BroccoliMergeTrees)) return new BroccoliMergeTrees(inputNodes, options)
   options = options || {}
@@ -26,10 +28,10 @@ function BroccoliMergeTrees(inputNodes, options) {
   if (!Array.isArray(inputNodes)) {
     throw new TypeError(name + ': Expected array, got: [' + inputNodes +']')
   }
-  Plugin.call(this, inputNodes, {
+  Plugin.call(this, joinNodes(this, options, inputNodes), {
     persistentOutput: true,
     annotation: options.annotation
-  })
+  });
 
   this._debug = debug(name);
 
@@ -37,6 +39,28 @@ function BroccoliMergeTrees(inputNodes, options) {
   this._buildCount = 0;
   this._currentTree = FSTree.fromPaths([]);
 }
+
+function joinNodes(host, options, inputNodes) {
+  var nodes = []
+  for (var i = 0 ; i < inputNodes.length ; i++ ) {
+    var node = inputNodes[i];
+    if (host[ASSIMILATION_SYMBOL](options, node)) {
+      for (var j = 0; j < inputNodes[i]._inputNodes.length; j++) {
+        nodes.push(inputNodes[i]._inputNodes[j]);
+      }
+    }
+    else {
+      nodes.push(inputNodes[i]);
+    }
+  }
+
+  return nodes;
+}
+
+BroccoliMergeTrees.prototype[ASSIMILATION_SYMBOL] = function(options, other) {
+  return typeof other[ASSIMILATION_SYMBOL] === 'function' &&
+         options.overwite === other.options.overwite;
+};
 
 BroccoliMergeTrees.prototype.debug = function(message, args) {
   this._debug(message, args);
