@@ -18,44 +18,7 @@ function inputFixture(obj) {
   return new Fixture.Node(obj)
 }
 
-function mapBy(array, property) {
-  return array.map(function (item) {
-    return item[property];
-  });
-}
-
 describe('MergeTrees', function() {
-  describe('_mergeRelativePaths', function() {
-    it('returns an array of file infos', function() {
-      var mergeTrees = new MergeTrees([]);
-      mergeTrees.inputPaths = [__dirname + '/tests/fixtures/a'];
-      mergeTrees.outputPath = __dirname + '/tmp/output';
-
-      var fileInfos = mergeTrees._mergeRelativePath('');
-      var entries = mapBy(fileInfos, 'entry');
-
-      expect(mapBy(entries, 'relativePath')).to.deep.equal([
-        'bar.js',
-        'foo.js',
-      ]);
-    });
-
-    it('sorts its return value', function() {
-      var mergeTrees = new MergeTrees([]);
-      mergeTrees.inputPaths = [__dirname + '/tests/fixtures/b/input0', __dirname + '/tests/fixtures/b/input1'];
-      mergeTrees.outputPath = __dirname + '/tmp/output';
-
-      var fileInfos = mergeTrees._mergeRelativePath('');
-      var entries = mapBy(fileInfos, 'entry');
-
-      expect(mapBy(entries, 'relativePath')).to.deep.equal([
-        'foo',
-        'foo/a.js',
-        'foo/b.js',
-      ]);
-    });
-  });
-
   describe('rebuilds', function() {
     var ROOT= __dirname + '/tmp/';
     var ONE = __dirname + '/tmp/ONE';
@@ -77,8 +40,8 @@ describe('MergeTrees', function() {
     });
 
     afterEach(function() {
-      fs.removeSync(ROOT);
-      return pipeline.cleanup();
+    //  fs.removeSync(ROOT);
+     // return pipeline.cleanup();
     });
 
     it('handles synlink -> merge transitions', function() {
