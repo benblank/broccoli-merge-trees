@@ -51,11 +51,6 @@ BroccoliMergeTrees.prototype.build = function() {
   let instrumentation = heimdall.start('derivePatches - broccoli-merge-trees');
   const patches = this.in.changes(this.options);
 
-  console.log(`----------------patches from ${this._name + (this._annotation != null ? ' (' + this._annotation + ')' : '')}`);
-  patches.forEach(patch => {
-    console.log(patch[0] + ' ' + patch[1].replace(/(\/|\\)$/, ''));
-  });
-
   instrumentation.stats.patches = patches.length;
   instrumentation.stop();
   instrumentation = heimdall.start('applyPatches - broccoli-merge-trees', ApplyPatchesSchema);
